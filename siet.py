@@ -174,7 +174,7 @@ def change_tftp(mode): #Send package for changing tftp address
         sTime = get_time_from_user()
         fList = 'tftp://' + my_ip + '/tar_imglist0.txt'
 
-                sTcp = '%08x' % 1 + '%08x' % 1 + '%08x' % 2 + '%08x' % 0x1c4 + '%08x' % 2
+        sTcp = '%08x' % 1 + '%08x' % 1 + '%08x' % 2 + '%08x' % 0x1c4 + '%08x' % 2
         if sTime == '00:00':
             sTcp += '%08x' % 0x821 + '%024x' % 1 + '%032x' % 1
         else:

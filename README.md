@@ -1,7 +1,7 @@
 # SIET
 Smart Install Exploitation Tool
 
-Smart Install is a plug-and-play configuration and image-management feature that provides zero-touch deployment for new switches. You can ship a switch to a location, place it in the network and power it on with no configuration required on the device.
+Cisco Smart Install is a plug-and-play configuration and image-management feature that provides zero-touch deployment for new switches. You can ship a switch to a location, place it in the network and power it on with no configuration required on the device.
 
 You can easy identify it by nmap: 
 nmap -n -Pn -p 4786 -v 192.168.0.1

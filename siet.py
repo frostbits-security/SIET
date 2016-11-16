@@ -212,14 +212,14 @@ def start_tftp_serv(mode): #start fake tftp server for put config file on host
     while True:
 
         iTransfer += 1
-        print "[INFO]: Request count: %(iTransfer)" % (iTransfer)
+        print "[INFO]: Request count: %f" % iTransfer
         if (iTransfer == 50):
             break
 
         try:
             buffer, (raddress, rport) = tftp_server.recvfrom(65536)
             #print('[DEBUG]: Package from remote host: ' + buffer)
-            print "[INFO]: Connect from: %(raddress)" % (raddress)
+            print "[INFO]: Connect from: %f" % raddress
 
         except socket.error:
             error_time += 1

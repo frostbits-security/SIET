@@ -219,7 +219,7 @@ def start_tftp_serv(mode): #start fake tftp server for put config file on host
         try:
             buffer, (raddress, rport) = tftp_server.recvfrom(65536)
             #print('[DEBUG]: Package from remote host: ' + buffer)
-            print "[INFO]: Connect from: %f" % raddress
+            print "[INFO]: Connect from: %s" % raddress
 
         except socket.error:
             error_time += 1

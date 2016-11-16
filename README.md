@@ -25,12 +25,12 @@ This simple tool help's you to use all of them.
 
 Syntax: sudo python siet.py **-h** -i 192.168.0.1
 
-  -t - test device for smart install.
+  -t  test device for smart install.
   
-  -g -get device config.
+  -g  get device config.
   
-  -c - change device config.
+  -c  change device config.
   
-  -u - update device IOS.
+  -u  update device IOS.
   
-  -e - execude commands in device console.
+  -e  execude commands in device console.

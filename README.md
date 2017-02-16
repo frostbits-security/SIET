@@ -1,7 +1,7 @@
 # SIET
 Smart Install Exploitation Tool
 
-tag:Cisco smart install exploit
+tag: Cisco smart install exploit
 
 Cisco Smart Install is a plug-and-play configuration and image-management feature that provides zero-touch deployment for new switches. You can ship a switch to a location, place it in the network and power it on with no configuration required on the device.
 
@@ -23,7 +23,7 @@ This protocol have few security issue, that allows:
 
 All of them are caused by the lack of any authentication in smart install protocol. Any device can act as a director and send malformed tcp packet. It works on any "client" devices where smart install is enable. Not matter used smart install in network or not.
 
-Confim from vendor: https://tools.cisco.com/security/center/content/CiscoSecurityResponse/cisco-sr-20170214-smi
+**Confim** from vendor: https://tools.cisco.com/security/center/content/CiscoSecurityResponse/cisco-sr-20170214-smi
 
 This simple tool help's you to use all of them.
 

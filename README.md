@@ -33,12 +33,7 @@ Syntax: sudo python siet.py **-h** -i 192.168.0.1
 
 ==========================================================================================================================
 SIET2 have new option "-l". You can use list of ip addresses for getting configuration file.
-Example of usage: **python siet2.1.py -l list.txt -g**
 
-Example of list file:
-172.16.0.1
-172.17.4.1
-...
-172.25.1.20
+Example of usage: **python siet2.1.py -l list.txt -g**
 
 SIET2 not fully tested

@@ -2,6 +2,7 @@
 Smart Install Exploitation Tool
 
 tag:Cisco smart install exploit
+
 Cisco Smart Install is a plug-and-play configuration and image-management feature that provides zero-touch deployment for new switches. You can ship a switch to a location, place it in the network and power it on with no configuration required on the device.
 
 You can easy identify it by nmap: 

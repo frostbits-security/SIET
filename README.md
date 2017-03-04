@@ -5,12 +5,12 @@ tag: Cisco smart install exploit
 
 Cisco Smart Install is a plug-and-play configuration and image-management feature that provides zero-touch deployment for new switches. You can ship a switch to a location, place it in the network and power it on with no configuration required on the device.
 
-You can easy identify it by nmap: 
+You can easy identify it using nmap: 
 nmap -n -Pn -p 4786 -v 192.168.0.1
 
-This protocol have few security issue, that allows:
+This protocol has a security issue that allows:
 
-1. Change tftp-server address on client device by sending one malformed tcp packet.
+1. Change tftp-server address on client device by sending one malformed TCP packet.
 
 2. Copy client's startup-config on tftp-server exchanged previously.
 
@@ -21,11 +21,12 @@ This protocol have few security issue, that allows:
 5. Execute random set of commands on the "client" device. IS a new feature working only at 3.6.0E and 15.2(2)E ios versions. 
 
 
-All of them are caused by the lack of any authentication in smart install protocol. Any device can act as a director and send malformed tcp packet. It works on any "client" devices where smart install is enable. Not matter used smart install in network or not.
+All of them are caused by the lack of any authentication in smart install protocol. Any device can act as a director and send malformed tcp packet. It works on any "client" device where smart install is enabled. It does not matter if it used smart install in the network or not.
 
 **Confim** from vendor: https://tools.cisco.com/security/center/content/CiscoSecurityResponse/cisco-sr-20170214-smi
+                        https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20160323-smi
 
-This simple tool help's you to use all of them.
+This simple tool helps you to use all of them.
 
 Syntax: sudo python siet.py **-h** -i 192.168.0.1
 
@@ -44,4 +45,4 @@ SIET2 have new option "-l". You can use list of ip addresses for getting configu
 
 Example of usage: **sudo python siet2.1.py -l list.txt -g**
 
-SIET2 not fully tested
+SIET2 not fully tested.

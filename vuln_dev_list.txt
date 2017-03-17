@@ -1,0 +1,31 @@
+Catalyst 4500 Supervisor Engine, 6E, 6LE, 7E, 7LE, 8E, 8LE
+Catalyst 3850
+Catalyst 3750-X
+Catalyst 3750-E
+Catalyst 3750
+Catalyst 3650
+Catalyst 3560-X
+Catalyst 3560-E
+Catalyst 3560-C
+Catalyst 3560-CX
+Catalyst 3560
+Catalyst 2960-S
+Catalyst 2960-SF
+Catalyst 2960-C
+Catalyst 2960-P
+Catalyst 2960
+Catalyst 2960-X
+Catalyst 2960-XR
+Catalyst 2960-L
+Catalyst 2960-CX
+Catalyst 2975
+IE 2000
+IE 3000
+IE 3010
+IE 4000
+IE 4010
+IE 5000
+SM-ES2 SKUs
+SM-ES3 SKUs
+NME-16ES-1G-P
+SM-X-ES3 SKUs

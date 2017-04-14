@@ -40,7 +40,9 @@ Syntax: sudo python siet.py **-h** -i 192.168.0.1
   
   -e  execude commands in device console.
 
-==========================================================================================================================
+
+
+
 SIET2 have new option "-l". You can use list of ip addresses for getting configuration file.
 
 Example of usage: **sudo python siet2.1.py -l list.txt -g**

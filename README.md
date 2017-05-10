@@ -26,6 +26,8 @@ All of them are caused by the lack of any authentication in smart install protoc
 **Confim** from vendor: https://tools.cisco.com/security/center/content/CiscoSecurityResponse/cisco-sr-20170214-smi
                         https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20160323-smi
 
+**Slides**: https://2016.zeronights.ru/wp-content/uploads/2016/12/CiscoSmartInstall.v3.pdf
+
 This simple tool helps you to use all of them.
 
 Syntax: sudo python siet.py **-h** -i 192.168.0.1

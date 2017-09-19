@@ -5,7 +5,7 @@ Smart Install Exploitation Tool
 Cisco Smart Install is a plug-and-play configuration and image-management feature that provides zero-touch deployment for new switches. You can ship a switch to a location, place it in the network and power it on with no configuration required on the device.
 
 You can easy identify it using nmap: 
-nmap -n -Pn -p 4786 -v 192.168.0.1
+nmap -p 4786 -v 192.168.0.1
 
 This protocol has a security issue that allows:
 

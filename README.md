@@ -33,24 +33,23 @@ This simple tool helps you to use all of them.
 
 Example: sudo python siet.py **-g** -i 192.168.0.1
 
-  -t  test device for smart install.
+  **-t**  test device for smart install.
   
-  -g  get device config.
+  **-g**  get device config.
   
-  -c  change device config.
+  **-c**  change device config.
   
-  -u  update device IOS.
+  **-u**  update device IOS.
   
-  -e  execute commands in device's console.
+  **-e**  execute commands in device's console.
 
-  -i ip address of target device
+  **-i** ip address of target device
 
-  -l ip list of targets
+  **-l** ip list of targets (file path)
 
 
 # UPDATES
 
 New option "-l". You can use list of ip addresses for getting configuration file.
-Example of usage: **sudo python siet2.1.py -l list.txt -g**
 
 Fix bug with incorrect test of device.

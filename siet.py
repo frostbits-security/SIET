@@ -44,7 +44,7 @@ def get_time_from_user():  # Time setting before device reload and apply your co
     return tt[0:5]
 
 
-def get_file_for_tftp(mode):  # Creating directories, configuration files and execute files
+def get_file_for_tftp(mode): # Creating directories, configuration files and execute files
 
     ask_file = raw_input(
         '[INPUT]: Enter full cisco configuration/execute file path, or press "d" for default (be attention here, default file destroy previous configuration): ')
@@ -180,7 +180,7 @@ def conn_with_client(data, ip, mode=0):  # Set connection with remote client
             pass
 
 
-def test_device(current_ip):  # Testing for issue
+def test_device(current_ip): # Testing for issue
 
     sTcp = '0' * 7 + '1' + '0' * 7 + '1' + '0' * 7 + '4' + '0' * 7 + '8' + '0' * 7 + '1' + '0' * 8
 

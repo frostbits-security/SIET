@@ -1,7 +1,6 @@
 # SIET
-Smart Install Exploitation Tool
 
-tag: Cisco smart install exploit
+Smart Install Exploitation Tool
 
 Cisco Smart Install is a plug-and-play configuration and image-management feature that provides zero-touch deployment for new switches. You can ship a switch to a location, place it in the network and power it on with no configuration required on the device.
 
@@ -30,7 +29,9 @@ All of them are caused by the lack of any authentication in smart install protoc
 
 This simple tool helps you to use all of them.
 
-Syntax: sudo python siet.py **-h** -i 192.168.0.1
+# USAGE
+
+Example: sudo python siet.py **-g** -i 192.168.0.1
 
   -t  test device for smart install.
   
@@ -40,13 +41,16 @@ Syntax: sudo python siet.py **-h** -i 192.168.0.1
   
   -u  update device IOS.
   
-  -e  execude commands in device console.
+  -e  execute commands in device's console.
+
+  -i ip address of target device
+
+  -l ip list of targets
 
 
+# UPDATES
 
-
-SIET2 have new option "-l". You can use list of ip addresses for getting configuration file.
-
+New option "-l". You can use list of ip addresses for getting configuration file.
 Example of usage: **sudo python siet2.1.py -l list.txt -g**
 
-SIET2 not fully tested.
+Fix bug with incorrect test of device.

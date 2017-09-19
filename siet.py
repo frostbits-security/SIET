@@ -180,7 +180,7 @@ def conn_with_client(data, ip, mode=0):  # Set connection with remote client
             pass
 
 
-def test_device(current_ip): # Testing for issue
+def test_device(current_ip): # Testing for smart install
 
     sTcp = '0' * 7 + '1' + '0' * 7 + '1' + '0' * 7 + '4' + '0' * 7 + '8' + '0' * 7 + '1' + '0' * 8
 

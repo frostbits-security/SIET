@@ -256,8 +256,14 @@ def main():
     args = get_argm_from_user()
 
     if args.mode == 'test':
-        current_ip = args.IP
-        test_device(current_ip)
+        if args.list_IP:
+            with open(args.list_IP, 'r') as list:
+                for line in list:
+                    ip = line.strip()
+                    if ip: test_device(ip)
+        else:
+            current_ip = args.IP
+            test_device(current_ip)
 
     else:
         tftp = subprocess.Popen(["python", "sTFTP.py"])
@@ -285,7 +291,7 @@ def main():
                     with open(args.list_IP, 'r') as list:
                         for line in list:
                             ip = line.strip()
-                            q.put(ip)
+                            if ip: q.put(ip)
 
                     for i in range(50):
                         t = threading.Thread(target=worker)

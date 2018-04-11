@@ -11,7 +11,7 @@ import subprocess
 import time
 import threading
 import Queue
-
+import threading
 
 def get_argm_from_user():  # Set arguments for running
     parser = argparse.ArgumentParser()
@@ -189,6 +189,11 @@ def test_device(current_ip): # Testing for smart install
     # print('[DEBUG]: Decoded packet to sent: ' + sTcp.decode('hex'))
     conn_with_client(sTcp.decode('hex'), current_ip, mode=1)
 
+def test_device_scheduler(hosts_to_scan_queue):
+  while not hosts_to_scan_queue.empty():
+      host = hosts_to_scan_queue.get()
+      test_device(host)
+      hosts_to_scan_queue.task_done()
 
 def change_tftp(mode, current_ip):  # Send package for changing tftp address
 
@@ -257,10 +262,25 @@ def main():
 
     if args.mode == 'test':
         if args.list_IP:
+            hosts_to_scan_queue = Queue.Queue()
+
             with open(args.list_IP, 'r') as list:
-                for line in list:
-                    ip = line.strip()
-                    if ip: test_device(ip)
+                [hosts_to_scan_queue.put(line.strip()) for line in list]
+
+            try:
+                threads = []
+                for _ in range(1000):
+                    thread = threading.Thread(target=test_device_scheduler, args=(hosts_to_scan_queue,))
+                    threads.append(thread)
+                    thread.daemon=True
+                    thread.start()
+
+            except Exception:
+                print('Taking down all testing threads!')
+            finally:
+                for thread in threads: thread.join()
+                hosts_to_scan_queue.close()
+
         else:
             current_ip = args.IP
             test_device(current_ip)

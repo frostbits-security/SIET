@@ -119,7 +119,7 @@ def conn_with_client(data, ip, mode=0):  # Set connection with remote client
 
     try:
         conn_with_host = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        conn_with_host.settimeout(5)
+        conn_with_host.settimeout(10)
         conn_with_host.connect((ip, 4786))
         my_ip = (conn_with_host.getsockname()[0])
 

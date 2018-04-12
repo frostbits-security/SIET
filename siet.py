@@ -279,7 +279,6 @@ def main():
                 print('Taking down all testing threads!')
             finally:
                 for thread in threads: thread.join()
-                hosts_to_scan_queue.close()
 
         else:
             current_ip = args.IP
@@ -313,7 +312,7 @@ def main():
                             ip = line.strip()
                             if ip: q.put(ip)
 
-                    for i in range(50):
+                    for i in range(100):
                         t = threading.Thread(target=worker)
                         t.daemon = True
                         t.start()

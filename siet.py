@@ -11,7 +11,7 @@ import subprocess
 import time
 import threading
 import Queue
-
+import threading
 
 def get_argm_from_user():  # Set arguments for running
     parser = argparse.ArgumentParser()
@@ -119,7 +119,7 @@ def conn_with_client(data, ip, mode=0):  # Set connection with remote client
 
     try:
         conn_with_host = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        conn_with_host.settimeout(5)
+        conn_with_host.settimeout(10)
         conn_with_host.connect((ip, 4786))
         my_ip = (conn_with_host.getsockname()[0])
 
@@ -189,6 +189,11 @@ def test_device(current_ip): # Testing for smart install
     # print('[DEBUG]: Decoded packet to sent: ' + sTcp.decode('hex'))
     conn_with_client(sTcp.decode('hex'), current_ip, mode=1)
 
+def test_device_scheduler(hosts_to_scan_queue):
+  while not hosts_to_scan_queue.empty():
+      host = hosts_to_scan_queue.get()
+      test_device(host)
+      hosts_to_scan_queue.task_done()
 
 def change_tftp(mode, current_ip):  # Send package for changing tftp address
 
@@ -256,8 +261,28 @@ def main():
     args = get_argm_from_user()
 
     if args.mode == 'test':
-        current_ip = args.IP
-        test_device(current_ip)
+        if args.list_IP:
+            hosts_to_scan_queue = Queue.Queue()
+
+            with open(args.list_IP, 'r') as list:
+                [hosts_to_scan_queue.put(line.strip()) for line in list]
+
+            try:
+                threads = []
+                for _ in range(1000):
+                    thread = threading.Thread(target=test_device_scheduler, args=(hosts_to_scan_queue,))
+                    threads.append(thread)
+                    thread.daemon=True
+                    thread.start()
+
+            except Exception:
+                print('Taking down all testing threads!')
+            finally:
+                for thread in threads: thread.join()
+
+        else:
+            current_ip = args.IP
+            test_device(current_ip)
 
     else:
         tftp = subprocess.Popen(["python", "sTFTP.py"])
@@ -285,9 +310,9 @@ def main():
                     with open(args.list_IP, 'r') as list:
                         for line in list:
                             ip = line.strip()
-                            q.put(ip)
+                            if ip: q.put(ip)
 
-                    for i in range(50):
+                    for i in range(100):
                         t = threading.Thread(target=worker)
                         t.daemon = True
                         t.start()

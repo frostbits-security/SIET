@@ -47,6 +47,8 @@ Example: sudo python siet.py **-g** -i 192.168.0.1
   **-i** ip address of target device
 
   **-l** ip list of targets (file path)
+  
+  **--thread-count** number of threads to be spawned
 
 
 # UPDATES

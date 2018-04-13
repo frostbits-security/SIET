@@ -10,8 +10,12 @@ import sys
 import subprocess
 import time
 import threading
-import Queue
-import threading
+try:
+    import Queue as queue
+except ImportError:
+    # Queue is queue in python3
+    print('[ERROR]: Does not support python3 yet!')
+    raise SystemExit
 
 def get_argm_from_user():  # Set arguments for running
     parser = argparse.ArgumentParser()
@@ -27,6 +31,8 @@ def get_argm_from_user():  # Set arguments for running
                         help="Updating IOS on the remote device")
     parser.add_argument("-e", "--execute", dest="mode", const="execute", action="store_const",
                         help="Execute code on device (new IOS versions: 3.6.0E+ & 15.2(2)E+")
+    parser.add_argument('--thread-count', metavar='', default=100, type=int,
+                        help='Number of threads to be spawned (default: %(default)s)\n\n')
     args = parser.parse_args()
     return args
 
@@ -72,7 +78,7 @@ def get_file_for_tftp(mode): # Creating directories, configuration files and exe
                 nfile = 'execute.txt'
 
         except (IOError, OSError) as why:
-            print str(why)
+            print(str(why))
             print('[ERROR]: Check the file and try again.')
             exit()
 
@@ -87,7 +93,7 @@ def get_file_for_tftp(mode): # Creating directories, configuration files and exe
                 nfile = 'my_exec.txt'
 
         except (IOError, OSError) as why:
-            print str(why)
+            print(str(why))
             print('[ERROR]: Check the file and try again.')
             exit()
 
@@ -108,7 +114,7 @@ def get_ios_for_tftp():  # Creating nessesary files for IOS update
         f.close()
 
     except (IOError, OSError) as why:
-        print str(why)
+        print(str(why))
         print('[ERROR]: Check the file and try again.')
         exit()
 
@@ -119,7 +125,7 @@ def conn_with_client(data, ip, mode=0):  # Set connection with remote client
 
     try:
         conn_with_host = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        conn_with_host.settimeout(10)
+        conn_with_host.settimeout(5)
         conn_with_host.connect((ip, 4786))
         my_ip = (conn_with_host.getsockname()[0])
 
@@ -262,21 +268,21 @@ def main():
 
     if args.mode == 'test':
         if args.list_IP:
-            hosts_to_scan_queue = Queue.Queue()
-
+            hosts_to_scan_queue = queue.Queue()
             with open(args.list_IP, 'r') as list:
                 [hosts_to_scan_queue.put(line.strip()) for line in list]
 
             try:
                 threads = []
-                for _ in range(1000):
+                for _ in range(args.thread_count):
                     thread = threading.Thread(target=test_device_scheduler, args=(hosts_to_scan_queue,))
                     threads.append(thread)
                     thread.daemon=True
                     thread.start()
 
-            except Exception:
-                print('Taking down all testing threads!')
+            except Exception as err:
+                print('[ERROR]: Taking down all testing threads!')
+                print(err)
             finally:
                 for thread in threads: thread.join()
 
@@ -305,14 +311,14 @@ def main():
                             change_tftp(args.mode, ip)
                             q.task_done()
 
-                    q = Queue.Queue()
+                    q = queue.Queue()
 
                     with open(args.list_IP, 'r') as list:
                         for line in list:
                             ip = line.strip()
                             if ip: q.put(ip)
 
-                    for i in range(100):
+                    for i in range(args.thread_count):
                         t = threading.Thread(target=worker)
                         t.daemon = True
                         t.start()
@@ -320,7 +326,7 @@ def main():
                     q.join()
 
                 except (IOError, OSError) as why:
-                    print str(why)
+                    print(str(why))
                     print('[ERROR]: Check the file and try again.')
                     exit()
 

@@ -10,7 +10,12 @@ import sys
 import subprocess
 import time
 import threading
-import Queue
+try:
+    import Queue as queue
+except ImportError:
+    # Queue is queue in python3
+    print('[ERROR]: Does not support python3 yet!')
+    raise SystemExit
 
 def get_argm_from_user():  # Set arguments for running
     parser = argparse.ArgumentParser()
@@ -73,7 +78,7 @@ def get_file_for_tftp(mode): # Creating directories, configuration files and exe
                 nfile = 'execute.txt'
 
         except (IOError, OSError) as why:
-            print str(why)
+            print(str(why))
             print('[ERROR]: Check the file and try again.')
             exit()
 
@@ -88,7 +93,7 @@ def get_file_for_tftp(mode): # Creating directories, configuration files and exe
                 nfile = 'my_exec.txt'
 
         except (IOError, OSError) as why:
-            print str(why)
+            print(str(why))
             print('[ERROR]: Check the file and try again.')
             exit()
 
@@ -109,7 +114,7 @@ def get_ios_for_tftp():  # Creating nessesary files for IOS update
         f.close()
 
     except (IOError, OSError) as why:
-        print str(why)
+        print(str(why))
         print('[ERROR]: Check the file and try again.')
         exit()
 
@@ -263,7 +268,7 @@ def main():
 
     if args.mode == 'test':
         if args.list_IP:
-            hosts_to_scan_queue = Queue.Queue()
+            hosts_to_scan_queue = queue.Queue()
             with open(args.list_IP, 'r') as list:
                 [hosts_to_scan_queue.put(line.strip()) for line in list]
 
@@ -276,7 +281,7 @@ def main():
                     thread.start()
 
             except Exception as err:
-                print('Taking down all testing threads!')
+                print('[ERROR]: Taking down all testing threads!')
                 print(err)
             finally:
                 for thread in threads: thread.join()
@@ -306,7 +311,7 @@ def main():
                             change_tftp(args.mode, ip)
                             q.task_done()
 
-                    q = Queue.Queue()
+                    q = queue.Queue()
 
                     with open(args.list_IP, 'r') as list:
                         for line in list:
@@ -321,7 +326,7 @@ def main():
                     q.join()
 
                 except (IOError, OSError) as why:
-                    print str(why)
+                    print(str(why))
                     print('[ERROR]: Check the file and try again.')
                     exit()
 

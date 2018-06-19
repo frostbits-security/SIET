@@ -32,6 +32,8 @@ This simple tool helps you to use all of them.
 
 # USAGE
 
+You can use it for password recovery of for unlock cisco switch when no password provided.
+
 Example: sudo python siet.py **-g** -i 192.168.0.1
 
   **-t**  test device for smart install.

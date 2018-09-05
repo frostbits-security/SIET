@@ -34,6 +34,10 @@ def get_argm_from_user():  # Set arguments for running
     parser.add_argument('--thread-count', metavar='', default=100, type=int,
                         help='Number of threads to be spawned (default: %(default)s)\n\n')
     args = parser.parse_args()
+    if args.mode is None:
+        parser.print_help()
+        sys.exit(0)
+
     return args
 
 

@@ -58,3 +58,5 @@ Example: sudo python siet.py **-g** -i 192.168.0.1
 New option "-l". You can use list of ip addresses for getting configuration file.
 
 Fix bug with incorrect test of device.
+
+If you are thinking about what to do with the copied configuration files, you can try our new tool for their analysis: https://github.com/cisco-config-analysis-tool/ccat

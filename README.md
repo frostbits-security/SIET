@@ -42,6 +42,8 @@ Example: sudo python siet.py **-g** -i 192.168.0.1
   
   **-c**  change device config.
   
+  **-C**  change multiple device configs.
+
   **-u**  update device IOS.
   
   **-e**  execute commands in device's console.
@@ -54,6 +56,10 @@ Example: sudo python siet.py **-g** -i 192.168.0.1
 
 
 # UPDATES
+
+New option "-C". You can place configs into the 'tftp/conf' directory following the 
+naming convention of ip.conf, ie: 192.168.10.1.conf. A target ip list "-l" must be used
+in conjunction with this option, the name of the conf corresponds to it's target destination.
 
 New option "-l". You can use list of ip addresses for getting configuration file.
 

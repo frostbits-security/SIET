@@ -8,7 +8,7 @@ You can easy identify it using `nmap`:
 nmap -p 4786 -v 192.168.0.1
 ```
 
-This protocol has a security issue that allows:
+This protocol has a security issue that allows and this simple tool helps you to use all of them.:
 
 1. Change tftp-server address on client device by sending one malformed TCP packet.
 2. Copy client's `startup-config` on tftp-server exchanged previously.
@@ -25,9 +25,6 @@ All of them are caused by the lack of any authentication in smart install protoc
 - https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20160323-smi
 
 **Slides**: https://2016.zeronights.ru/wp-content/uploads/2016/12/CiscoSmartInstall.v3.pdf
-
-This simple tool helps you to use all of them.
-
 
 # USAGE
 

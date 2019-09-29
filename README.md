@@ -8,7 +8,7 @@ You can easy identify it using `nmap`:
 nmap -p 4786 -v 192.168.0.1
 ```
 
-This protocol has a security issue that allows and this simple tool helps you to use all of them.:
+This protocol has a few security issues and this simple tool helps you to use all of them.:
 
 1. Change tftp-server address on client device by sending one malformed TCP packet.
 2. Copy client's `startup-config` on tftp-server exchanged previously.

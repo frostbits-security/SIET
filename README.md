@@ -66,3 +66,4 @@ Fix bug with incorrect test of device.
 
 If you are thinking about what to do with the copied configuration files, you can try our new tool: [Cisco Config Analysis Tool](https://github.com/cisco-config-analysis-tool/ccat)
 
+If you have any questions, please write me at telegram: @sab0tag3d

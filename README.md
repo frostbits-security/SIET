@@ -53,6 +53,14 @@ Options:
 - `-l` ip list of targets (file path)
 - `--thread-count` number of threads to be spawned
 
+## How to use `-e` option
+1. You have to create directory `tftp` (near siet.py) and file inside it `tftp/execute.txt`
+2. File should contains commands for cisco switch, each command in quotes, separate by space. Example: `"username cisco privilege 15 secret 0 cisco" "exit"`
+3. Then you run `siet.py` with IP address of device.
+4. `siet.py` starts tftp server (69 port UDP) on your IP.
+5. `siet.py` send command to switch to force download that file and execute it.  
+    **Note: device need to have route to your IP. If you run it again device in Internet, you must run it from external IP**
+6. Device go to you TFTP server, download and execute commands from file (no reboot is necessary)
 
 # UPDATES
 

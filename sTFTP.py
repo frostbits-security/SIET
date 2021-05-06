@@ -117,7 +117,7 @@ def TftpServer(sBindIp, SocketTimeout):
                 f.close()
                 ConnDATA.close()
                 print("[INFO]:[{}]:[{}] File {}/{} finished downloading, size: {}".format(
-                    raddress, sReq, TFTP_FILES_PATH, nFile, fSize)
+                    raddress, sReq, TFTP_FILES_PATH, nFile, fSize))
                 sys.exit(0)
             if sReq == 'get':
                 data = f.read(DEF_BLKSIZE)

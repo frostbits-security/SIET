@@ -1,3 +1,5 @@
+## This is python2 version. Please upload python3 version of tool from here: https://github.com/frostbits-security/SIETpy3
+
 # SIET - Smart Install Exploitation Tool
 
 Cisco Smart Install is a plug-and-play configuration and image-management feature that provides zero-touch deployment for new switches. You can ship a switch to a location, place it in the network and power it on with no configuration required on the device.

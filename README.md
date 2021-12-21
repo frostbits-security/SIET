@@ -1,4 +1,4 @@
-## This is python2 version. Please upload python3 version of tool from here: https://github.com/frostbits-security/SIETpy3
+## This is python2 version. Please use python3 version of tool from here: https://github.com/frostbits-security/SIETpy3
 
 # SIET - Smart Install Exploitation Tool
 

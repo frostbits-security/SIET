@@ -1,5 +1,7 @@
 import sys, os, socket
 
+from codecs import encode, decode
+
 TFTP_FILES_PATH = 'tftp'  # path to files for transfering
 TFTP_SERVER_PORT = 69
 TFTP_GET_BYTE = 1
@@ -12,35 +14,40 @@ ECHO_FILE_SIZE = 0xa00000  # count of loaded or transfering bytes for print log 
 MAX_BLKSIZE = 0x10000
 MAX_BLKCOUNT = 0xffff
 
+python_version = sys.version_info[0]
 
 def TftpServer(sBindIp, SocketTimeout):
-    print '-= DvK =- TFTP server 2017(p)'
+    print("-= DvK =- TFTP server 2017(p)")
 
+    print("[INFO]: Creating directory.")
     try:
         os.mkdir('tftp')
+        print("[INFO]: Directory created.")
     except OSError:
-        print('[INFO]: Directory already exists. OK.')
+        print("[INFO]: Directory already exists.")
 
-    print '[INFO]: binding socket ..',
+    print("[INFO]: Binding socket .. ")
     try:
         ConnUDP = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         ConnUDP.settimeout(SocketTimeout)
         ConnUDP.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         ConnUDP.bind((sBindIp, TFTP_SERVER_PORT))
     except socket.error as msg:
-        print 'error: %s' % msg
+        print("[ERR]: {}".format(msg))
         return
-    print 'ok'
+    print("[INFO]: Socket bound successfully.")
 
     dPort = TFTP_MIN_DATA_PORT
     while True:
         try:
             buff, (raddress, rport) = ConnUDP.recvfrom(MAX_BLKSIZE)
+            if python_version == 3:
+                buff = buff.decode()
         except socket.timeout:
             pass
         except socket.error:
             return
-        print '[INFO]: connect from ', raddress, rport
+        print("[INFO]: Connection from {}:{}".format(raddress, rport))
         sReq = ''
         tReq = ord(buff[1])
         if tReq == TFTP_GET_BYTE:
@@ -50,41 +57,46 @@ def TftpServer(sBindIp, SocketTimeout):
             sReq = 'put'
             fMode = 'w'
         if len(sReq) == 0:
-            print '[ERR]: illegal TFTP request', tReq
+            print("[ERR]: Illegal TFTP request".format(tReq))
             sUdp = '\x00\x05\x00\x01Illegal TFTP request\x00'
             ConnUDP.sendto(sUdp, (raddress, rport))
             continue
         ss = buff[2:].split('\0')
         nFile = ss[0]
         sType = ss[1]
-        print '[INFO]:[' + raddress + '] ' + sReq + 'ing file', nFile, sType
+        print("[INFO]:[{}] {}ting file {} {}".format(raddress, sReq, nFile, sType))
+
         if (sType == 'octet'):
             fMode += 'b'
+
         try:
             f = open(TFTP_FILES_PATH + '/' + nFile, fMode)
         except IOError:
-            print '[INFO]:[' + raddress + ']:[' + sReq + '] error open file: ' + TFTP_FILES_PATH + '/' + nFile
+            print("[INFO]:[{}]:[{}] Error opening file: {}/{}".format(raddress, sReq, TFTP_FILES_PATH, nFile))
             sUdp = '\x00\x05\x00\x01Error open file\x00'
             ConnUDP.sendto(sUdp, (raddress, rport))
             continue
+
         try:
             ConnDATA = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             ConnDATA.settimeout(SocketTimeout)
             ConnDATA.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             ConnDATA.bind(('', dPort))
         except socket.error:
-            print '[ERR]:[' + raddress + ']:[' + sReq + '] error binding dataport', dPort
+            print("[ERR]:[{}]:[{}] Error binding data port {}".format(raddress, sReq, dPort))
             sUdp = '\x00\x05\x00\x01Internal error\x00'
             ConnUDP.sendto(sUdp, (raddress, rport))
             f.close()
             continue
-        print '[INFO]:[' + raddress + ']:[' + sReq + '] success binding data port', dPort
+
+        print("[INFO]:[{}]:[{}] Success binding data port {}".format(raddress, sReq, dPort))
+
         dPort += 1
         if dPort == TFTP_MAX_DATA_PORT:
             dPort = TFTP_MIN_DATA_PORT
         child_pid = os.fork()
         if child_pid < 0:
-            print '[ERR]:[' + raddress + ']:[' + sReq + '] error forking new process'
+            print("[ERR]:[{}]:[{}] Error forking new process".format(raddress, sReq))
             sUdp = '\x00\x05\x00\x01Internal error\x00'
             ConnUDP.sendto(sUdp, (raddress, rport))
             f.close()
@@ -93,57 +105,90 @@ def TftpServer(sBindIp, SocketTimeout):
         if child_pid == 0:
             if sReq == 'put':
                 sUdp = '0004' + ('%04x' % 0)
-                ConnDATA.sendto(sUdp.decode('hex'), (raddress, rport))
+                ConnDATA.sendto(hex_decode(sUdp), (raddress, rport))
                 fSize = 0
-                buffer, (raddress, rport) = ConnDATA.recvfrom(MAX_BLKSIZE)
-                while buffer:
-                    fSize += len(buffer[4:])
-                    f.write(buffer[4:])
-                    sUdp = '\x00\x04' + buffer[2:4]
-                    ConnDATA.sendto(sUdp, (raddress, rport))
-                    if len(buffer[4:]) < DEF_BLKSIZE:
+                buff, (raddress, rport) = ConnDATA.recvfrom(MAX_BLKSIZE)
+                if python_version == 3:
+                    buff = buff.decode()
+
+                while buff:
+                    fSize += len(buff[4:])
+                    if python_version == 2:
+                        f.write(buff[4:])
+                    elif python_version == 3:
+                        f.write(bytes(buff[4], 'ascii'))
+
+                    sUdp = '\x00\x04' + buff[2:4]
+                    if python_version == 2:
+                        ConnDATA.sendto(sUdp, (raddress, rport))
+                    elif python_version == 3:
+                        ConnDATA.sendto(bytes(sUdp, 'ascii'), (raddress, rport))
+
+                    if len(buff[4:]) < DEF_BLKSIZE:
                         break
-                    buffer, (raddress, rport) = ConnDATA.recvfrom(MAX_BLKSIZE)
+                    buff, (raddress, rport) = ConnDATA.recvfrom(MAX_BLKSIZE)
+                    if python_version == 3:
+                        buff = buff.decode()
+
                     if int(fSize / ECHO_FILE_SIZE) * ECHO_FILE_SIZE == fSize:
-                        print '[INFO]:[' + raddress + ']:[' + sReq + '] file ' + TFTP_FILES_PATH + '/' + nFile + ' downloading, size:', fSize
+                        print("[INFO]:[{}]:[{}] File {}/{} downloading, size: {}".format(
+                            raddress, sReq, TFTP_FILES_PATH, nFile, fSize))
                 f.close()
                 ConnDATA.close()
-                print '[INFO]:[' + raddress + ']:[' + sReq + '] file ' + TFTP_FILES_PATH + '/' + nFile + ' finish download, size:', fSize
+                print("[INFO]:[{}]:[{}] File {}/{} finished downloading, size: {}".format(
+                    raddress, sReq, TFTP_FILES_PATH, nFile, fSize))
                 sys.exit(0)
             if sReq == 'get':
                 data = f.read(DEF_BLKSIZE)
                 fSize = len(data)
                 j = 1
                 while data:
-                    sUdp = ('0003' + ('%04x' % j)).decode('hex') + data
-                    ConnDATA.sendto(sUdp, (raddress, rport))
+                    sUdp = hex_decode('0003' + ('%04x' % j)) + data
+                    if python_version == 2:
+                        ConnDATA.sendto(sUdp, (raddress, rport))
+                    elif python_version == 3:
+                        ConnDATA.sendto(bytes(sUdp, 'ascii'), (raddress, rport))
+
                     try:
-                        buffer, (raddress, rport) = ConnDATA.recvfrom(MAX_BLKSIZE)
+                        buff, (raddress, rport) = ConnDATA.recvfrom(MAX_BLKSIZE)
+                        if python_version == 3:
+                            buff = buff.decode()
                     except socket.error:
-                        print '[ERR]:[' + raddress + ']:[' + sReq + '] error upload file ' + TFTP_FILES_PATH + '/' + nFile
+                        print("[ERR]:[{}]:[{}] Error uploading file {}/{}".format(raddress, sReq, TFTP_FILES_PATH, nFile))
                         break
-                    nBlock = int(buffer[2:4].encode('hex'), 16)
-                    if ord(buffer[1]) != 4 or nBlock != j:
-                        print '[ERR]:[' + raddress + ']:[' + sReq + '] answer packet not valid:', ord(
-                            buffer[1]), nBlock, j
+                    nBlock = int(hex_encode(buff[2:4]), 16)
+                    if ord(buff[1]) != 4 or nBlock != j:
+                        print("[ERR]:[{}]:[{}] Answer packet not valid: {}".format(raddress, sReq, ord(buff[1]), nBlock, j))
                         break
                     if len(data) < DEF_BLKSIZE:
                         break
                     data = f.read(DEF_BLKSIZE)
                     fSize += len(data)
                     if int(fSize / ECHO_FILE_SIZE) * ECHO_FILE_SIZE == fSize:
-                        print '[INFO]:[' + raddress + ']:[' + sReq + '] file ' + TFTP_FILES_PATH + '/' + nFile + ' uploading success, size:', fSize
+                        print("[INFO]:[{}]:[{}] File {}/{} uploading success, size: {}".format(
+                            raddress, sReq, TFTP_FILES_PATH, nFile, fSize))
                     if j == MAX_BLKCOUNT:
                         j = 0
                     else:
                         j += 1
                 f.close()
                 ConnDATA.close()
-                print '[INFO]:[' + raddress + ']:[' + sReq + '] file ' + TFTP_FILES_PATH + '/' + nFile + ' finish upload, size:', fSize
+                print("[INFO]:[{}]:[{}] File {}/{} finished uploading, size: {}".format(
+                    raddress, sReq, TFTP_FILES_PATH, nFile, fSize))
                 sys.exit(0)
             sys.exit(0)
 
+# Version-agnostic hex encoding and decoding functions
+def hex_encode(toEncode):
+    if python_version == 2:
+        return toEncode.encode('hex')
+    elif python_version == 3:
+        return encode(bytes(toEncode, 'ascii'), 'hex').decode()
 
-##########################################################################################
+def hex_decode(toDecode):
+    if python_version == 2:
+        return toDecode.decode('hex')
+    elif python_version == 3:
+        return decode(toDecode, 'hex')
 
 TftpServer('', TFTP_SOCK_TIMEOUT)
